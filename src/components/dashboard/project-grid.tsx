@@ -9,9 +9,10 @@ import { getProjects, type Project } from "@/lib/actions/projects";
 interface ProjectGridProps {
   teamId: string | null;
   canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export function ProjectGrid({ teamId, canEdit = false }: ProjectGridProps) {
+export function ProjectGrid({ teamId, canEdit = false, canDelete = false }: ProjectGridProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -67,8 +68,10 @@ export function ProjectGrid({ teamId, canEdit = false }: ProjectGridProps) {
             <ProjectCard
               project={project}
               canEdit={canEdit}
+              canDelete={canDelete}
               onClick={() => handleProjectClick(project)}
               onUpdate={fetchProjects}
+              onDelete={fetchProjects}
             />
           </div>
         ))}

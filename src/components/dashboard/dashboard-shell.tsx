@@ -1,21 +1,37 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { TeamSelector } from "./team-selector";
 import { ProjectGrid } from "./project-grid";
 import { type Team } from "@/lib/actions/teams";
+import { getCurrentUserRole } from "@/lib/actions/team-members";
 
 export function DashboardShell() {
   const { user } = useUser();
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
+  const [userRole, setUserRole] = useState<"owner" | "director" | "dancer" | null>(null);
 
   const handleTeamChange = useCallback((team: Team) => {
     setCurrentTeam(team);
   }, []);
 
-  // TODO: Check if user is a director of the current team
-  const canEdit = true;
+  // Fetch user's role when team changes
+  useEffect(() => {
+    async function fetchRole() {
+      if (currentTeam) {
+        const result = await getCurrentUserRole(currentTeam.id);
+        setUserRole(result.role);
+      } else {
+        setUserRole(null);
+      }
+    }
+    fetchRole();
+  }, [currentTeam]);
+
+  // Owners and directors can edit, only owners can delete
+  const canEdit = userRole === "owner" || userRole === "director";
+  const canDelete = userRole === "owner";
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,7 +62,7 @@ export function DashboardShell() {
       {/* Main Content */}
       <main className="pt-32 pb-12">
         <div className="mx-auto max-w-6xl px-6">
-          <ProjectGrid teamId={currentTeam?.id ?? null} canEdit={canEdit} />
+          <ProjectGrid teamId={currentTeam?.id ?? null} canEdit={canEdit} canDelete={canDelete} />
         </div>
       </main>
     </div>

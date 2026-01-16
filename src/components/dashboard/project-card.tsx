@@ -3,29 +3,34 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { type Project, updateProject } from "@/lib/actions/projects";
-import { Folder, Pencil, Check, X } from "lucide-react";
+import { type Project, updateProject, deleteProject } from "@/lib/actions/projects";
+import { Folder, Pencil, Check, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ProjectCardProps {
   project: Project;
   canEdit?: boolean;
+  canDelete?: boolean;
   onClick?: () => void;
   onUpdate?: () => void;
+  onDelete?: () => void;
   thumbnailUrl?: string | null;
 }
 
 export function ProjectCard({
   project,
   canEdit = false,
+  canDelete = false,
   onClick,
   onUpdate,
+  onDelete,
   thumbnailUrl,
 }: ProjectCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description || "");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const formattedDate = new Date(project.updated_at).toLocaleDateString(
     "en-US",
@@ -60,6 +65,27 @@ export function ProjectCard({
     if (!isEditing) {
       onClick?.();
     }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${project.name}"? This will permanently delete all videos and documents in this project. This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    const result = await deleteProject(project.id);
+    setIsDeleting(false);
+
+    if (result.error) {
+      alert(result.error);
+      return;
+    }
+
+    onDelete?.();
   };
 
   return (
@@ -138,18 +164,33 @@ export function ProjectCard({
                 Updated {formattedDate}
               </p>
             </div>
-            {canEdit && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-0 right-0 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditing(true);
-                }}
-              >
-                <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-              </Button>
+            {(canEdit || canDelete) && (
+              <div className="absolute top-0 right-0 flex gap-1 opacity-0 group-hover:opacity-100">
+                {canEdit && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 w-7 p-0 hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditing(true);
+                    }}
+                  >
+                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Button>
+                )}
+                {canDelete && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 w-7 p-0 hover:opacity-100 text-muted-foreground hover:text-destructive"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         )}

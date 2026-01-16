@@ -129,6 +129,30 @@ export async function deleteProject(projectId: string) {
 
   const supabase = await createClient();
 
+  // Get the project to find its team
+  const { data: project, error: projectError } = await supabase
+    .from("projects")
+    .select("team_id")
+    .eq("id", projectId)
+    .single();
+
+  if (projectError || !project) {
+    return { error: "Project not found" };
+  }
+
+  // Check if user is an owner of the team
+  const { data: membership } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("team_id", project.team_id)
+    .eq("user_id", userId)
+    .single();
+
+  if (!membership || membership.role !== "owner") {
+    return { error: "Only owners can delete projects" };
+  }
+
+  // Delete the project (videos, documents, blocks will cascade)
   const { error } = await supabase
     .from("projects")
     .delete()
