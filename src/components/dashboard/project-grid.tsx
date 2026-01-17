@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { ProjectCard } from "./project-card";
 import { CreateProjectCard } from "./create-project-card";
 import { CreateProjectDialog } from "./create-project-dialog";
@@ -13,6 +14,7 @@ interface ProjectGridProps {
 }
 
 export function ProjectGrid({ teamId, canEdit = false, canDelete = false }: ProjectGridProps) {
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -36,8 +38,7 @@ export function ProjectGrid({ teamId, canEdit = false, canDelete = false }: Proj
   }, [fetchProjects]);
 
   const handleProjectClick = (project: Project) => {
-    // TODO: Navigate to project detail page
-    console.log("Project clicked:", project.id);
+    router.push(`/projects/${project.id}`);
   };
 
   if (!teamId) {
