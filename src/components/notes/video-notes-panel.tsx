@@ -20,6 +20,7 @@ interface VideoNotesPanelProps {
   currentTime?: number;
   canEdit?: boolean;
   onTimestampClick?: (seconds: number) => void;
+  supportsTimestamps?: boolean;
 }
 
 export function VideoNotesPanel({
@@ -27,6 +28,7 @@ export function VideoNotesPanel({
   currentTime = 0,
   canEdit = false,
   onTimestampClick,
+  supportsTimestamps = true,
 }: VideoNotesPanelProps) {
   const [comments, setComments] = useState<VideoNote[]>([]);
   const [timestamps, setTimestamps] = useState<VideoNote[]>([]);
@@ -144,47 +146,61 @@ export function VideoNotesPanel({
           </TabsContent>
 
           <TabsContent value="timestamps" className="flex-1 flex flex-col mt-4">
-            {canEdit && (
+            {!supportsTimestamps ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm font-medium">Timestamps not available</p>
+                <p className="text-xs mt-1">
+                  Timestamp tracking is not supported for Vimeo videos.
+                  <br />
+                  Use YouTube or upload a video file to use timestamp notes.
+                </p>
+              </div>
+            ) : (
               <>
-                <NoteEditor
-                  placeholder="Add a note at current time..."
-                  showTimestamp
-                  currentTime={currentTime}
-                  onSubmit={handleCreateTimestamp}
-                  isLoading={isCreatingTimestamp}
-                />
-                <Separator className="my-4" />
+                {canEdit && (
+                  <>
+                    <NoteEditor
+                      placeholder="Add a note at current time..."
+                      showTimestamp
+                      currentTime={currentTime}
+                      onSubmit={handleCreateTimestamp}
+                      isLoading={isCreatingTimestamp}
+                    />
+                    <Separator className="my-4" />
+                  </>
+                )}
+
+                <ScrollArea className="flex-1">
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-12 bg-muted animate-pulse rounded" />
+                      ))}
+                    </div>
+                  ) : timestamps.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No timestamp notes yet</p>
+                      <p className="text-xs mt-1">Play the video and add notes at specific moments</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {timestamps.map((note) => (
+                        <TimestampNoteItem
+                          key={note.id}
+                          note={note}
+                          canEdit={canEdit}
+                          onClick={() => handleTimestampClick(note)}
+                          onUpdate={fetchNotes}
+                          onDelete={fetchNotes}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
               </>
             )}
-
-            <ScrollArea className="flex-1">
-              {isLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-12 bg-muted animate-pulse rounded" />
-                  ))}
-                </div>
-              ) : timestamps.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No timestamp notes yet</p>
-                  <p className="text-xs mt-1">Click on the video timeline to add notes</p>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  {timestamps.map((note) => (
-                    <TimestampNoteItem
-                      key={note.id}
-                      note={note}
-                      canEdit={canEdit}
-                      onClick={() => handleTimestampClick(note)}
-                      onUpdate={fetchNotes}
-                      onDelete={fetchNotes}
-                    />
-                  ))}
-                </div>
-              )}
-            </ScrollArea>
           </TabsContent>
         </Tabs>
       </CardContent>

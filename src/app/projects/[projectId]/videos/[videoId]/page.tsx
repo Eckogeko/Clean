@@ -153,6 +153,7 @@ export default function VideoPage() {
                   currentTime={currentTime}
                   canEdit={canEdit}
                   onTimestampClick={handleTimestampClick}
+                  supportsTimestamps={video.source_type !== "vimeo"}
                 />
               </aside>
             </div>
