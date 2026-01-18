@@ -76,6 +76,8 @@ function loadYouTubeApi(): Promise<void> {
 export interface VideoPlayerRef {
   seekTo: (seconds: number) => void;
   getCurrentTime: () => number;
+  getVideoElement: () => HTMLVideoElement | null;
+  pause: () => void;
 }
 
 interface VideoPlayerProps {
@@ -257,6 +259,16 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           return ytPlayerRef.current.getCurrentTime();
         }
         return 0;
+      },
+      getVideoElement: () => {
+        return videoRef.current;
+      },
+      pause: () => {
+        if (videoRef.current) {
+          videoRef.current.pause();
+        } else if (ytPlayerRef.current) {
+          ytPlayerRef.current.pauseVideo();
+        }
       },
     }));
 

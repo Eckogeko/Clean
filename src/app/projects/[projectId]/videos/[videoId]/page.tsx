@@ -6,6 +6,7 @@ import { ProjectHeader } from "@/components/project/project-header";
 import { ProjectSidebar } from "@/components/navigation/project-sidebar";
 import { VideoPlayer, VideoPlayerRef } from "@/components/video/video-player";
 import { VideoNotesPanel } from "@/components/notes/video-notes-panel";
+import { ScreenshotButton } from "@/components/video/screenshot-button";
 import { getProject, type Project } from "@/lib/actions/projects";
 import { getTeam, type Team } from "@/lib/actions/teams";
 import { getVideo, getVideoPlaybackUrl, type Video } from "@/lib/actions/videos";
@@ -26,6 +27,7 @@ export default function VideoPage() {
   const [userRole, setUserRole] = useState<"owner" | "director" | "dancer" | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [notesRefreshKey, setNotesRefreshKey] = useState(0);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -85,6 +87,10 @@ export default function VideoPage() {
 
   const canEdit = userRole === "owner" || userRole === "director";
 
+  const handleScreenshotSaved = () => {
+    setNotesRefreshKey((prev) => prev + 1);
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-screen">
@@ -136,6 +142,17 @@ export default function VideoPage() {
                   onTimeUpdate={handleTimeUpdate}
                 />
 
+                {/* Video toolbar */}
+                <div className="mt-4 flex items-center gap-4">
+                  <ScreenshotButton
+                    playerRef={playerRef}
+                    videoId={videoId}
+                    sourceType={video.source_type}
+                    canEdit={canEdit}
+                    onScreenshotSaved={handleScreenshotSaved}
+                  />
+                </div>
+
                 <div className="mt-4">
                   <h1 className="text-xl font-bold">{video.title}</h1>
                   {video.description && (
@@ -154,6 +171,7 @@ export default function VideoPage() {
                   canEdit={canEdit}
                   onTimestampClick={handleTimestampClick}
                   supportsTimestamps={video.source_type !== "vimeo"}
+                  refreshKey={notesRefreshKey}
                 />
               </aside>
             </div>

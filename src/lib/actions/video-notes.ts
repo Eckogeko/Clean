@@ -10,6 +10,7 @@ export type VideoNote = {
   note_type: "comment" | "timestamp";
   content: string;
   timestamp_seconds: number | null;
+  screenshot_url: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -142,7 +143,8 @@ export async function createVideoNote(
   videoId: string,
   content: string,
   noteType: "comment" | "timestamp",
-  timestampSeconds?: number
+  timestampSeconds?: number,
+  screenshotUrl?: string
 ) {
   const { userId } = await auth();
 
@@ -169,6 +171,7 @@ export async function createVideoNote(
       content,
       note_type: noteType,
       timestamp_seconds: noteType === "timestamp" ? timestampSeconds : null,
+      screenshot_url: noteType === "timestamp" ? screenshotUrl : null,
       created_by: userId,
     })
     .select()

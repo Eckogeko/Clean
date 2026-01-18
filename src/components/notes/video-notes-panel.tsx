@@ -21,6 +21,7 @@ interface VideoNotesPanelProps {
   canEdit?: boolean;
   onTimestampClick?: (seconds: number) => void;
   supportsTimestamps?: boolean;
+  refreshKey?: number;
 }
 
 export function VideoNotesPanel({
@@ -29,6 +30,7 @@ export function VideoNotesPanel({
   canEdit = false,
   onTimestampClick,
   supportsTimestamps = true,
+  refreshKey,
 }: VideoNotesPanelProps) {
   const [comments, setComments] = useState<VideoNote[]>([]);
   const [timestamps, setTimestamps] = useState<VideoNote[]>([]);
@@ -53,7 +55,7 @@ export function VideoNotesPanel({
 
   useEffect(() => {
     fetchNotes();
-  }, [fetchNotes]);
+  }, [fetchNotes, refreshKey]);
 
   const handleCreateComment = async (content: string) => {
     setIsCreatingComment(true);
