@@ -170,7 +170,7 @@ export default function VideoPage() {
                   currentTime={currentTime}
                   canEdit={canEdit}
                   onTimestampClick={handleTimestampClick}
-                  supportsTimestamps={video.source_type !== "vimeo"}
+                  supportsTimestamps={video.source_type !== "external"}
                   refreshKey={notesRefreshKey}
                 />
               </aside>

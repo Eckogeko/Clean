@@ -1,4 +1,4 @@
-export type VideoSourceType = "upload" | "youtube" | "vimeo" | "external";
+export type VideoSourceType = "upload" | "youtube" | "external";
 
 export interface ParsedVideoUrl {
   type: VideoSourceType;
@@ -25,22 +25,6 @@ export function parseVideoUrl(url: string): ParsedVideoUrl {
         id: videoId,
         embedUrl: `https://www.youtube.com/embed/${videoId}`,
         thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-      };
-    }
-  }
-
-  // Vimeo patterns
-  const vimeoPatterns = [/vimeo\.com\/(\d+)/, /player\.vimeo\.com\/video\/(\d+)/];
-
-  for (const pattern of vimeoPatterns) {
-    const match = url.match(pattern);
-    if (match) {
-      const videoId = match[1];
-      return {
-        type: "vimeo",
-        id: videoId,
-        embedUrl: `https://player.vimeo.com/video/${videoId}`,
-        thumbnailUrl: null, // Vimeo thumbnails require API call
       };
     }
   }
@@ -100,10 +84,6 @@ export function getVideoEmbedUrl(
     return `https://www.youtube.com/embed/${externalId}`;
   }
 
-  if (sourceType === "vimeo" && externalId) {
-    return `https://player.vimeo.com/video/${externalId}`;
-  }
-
   if (sourceType === "external" && externalUrl) {
     return externalUrl;
   }
@@ -115,14 +95,13 @@ export function getVideoEmbedUrl(
  * Get thumbnail URL for external videos
  */
 export function getExternalThumbnail(
-  type: "youtube" | "vimeo",
+  type: "youtube",
   videoId: string
 ): string | null {
   if (type === "youtube") {
     return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   }
 
-  // Vimeo requires API call for thumbnails
   return null;
 }
 

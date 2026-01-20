@@ -247,12 +247,12 @@ export function VideoUploadDialog({
                   id="video-url"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+                  placeholder="https://youtube.com/watch?v=..."
                   className="pl-9"
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Supports YouTube, Vimeo, and direct video URLs
+                Supports YouTube and direct video URLs
               </p>
             </div>
 

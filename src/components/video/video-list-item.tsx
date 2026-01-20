@@ -20,8 +20,6 @@ function getSourceIcon(sourceType: string) {
   switch (sourceType) {
     case "youtube":
       return <Youtube className="h-4 w-4 text-red-500" />;
-    case "vimeo":
-      return <VideoIcon className="h-4 w-4 text-blue-500" />;
     case "external":
       return <ExternalLink className="h-4 w-4 text-muted-foreground" />;
     default:

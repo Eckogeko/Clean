@@ -153,7 +153,7 @@ export function VideoNotesPanel({
                 <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm font-medium">Timestamps not available</p>
                 <p className="text-xs mt-1">
-                  Timestamp tracking is not supported for Vimeo videos.
+                  Timestamp tracking is not supported for external videos.
                   <br />
                   Use YouTube or upload a video file to use timestamp notes.
                 </p>

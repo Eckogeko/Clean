@@ -342,22 +342,6 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       );
     }
 
-    // For Vimeo videos, use iframe (Vimeo API would require similar treatment)
-    if (video.source_type === "vimeo" && video.external_id) {
-      const embedUrl = `https://player.vimeo.com/video/${video.external_id}`;
-      return (
-        <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-          <iframe
-            src={embedUrl}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full border-0"
-          />
-        </div>
-      );
-    }
-
     // For generic external URLs, try to embed as video
     if (video.external_url) {
       return (

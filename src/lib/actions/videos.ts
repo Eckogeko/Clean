@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-export type VideoSourceType = "upload" | "youtube" | "vimeo" | "external";
+export type VideoSourceType = "upload" | "youtube" | "external";
 
 export type Video = {
   id: string;
@@ -416,20 +416,6 @@ function parseExternalVideoUrl(url: string): {
         type: "youtube",
         id: videoId,
         thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-      };
-    }
-  }
-
-  // Vimeo patterns
-  const vimeoPatterns = [/vimeo\.com\/(\d+)/, /player\.vimeo\.com\/video\/(\d+)/];
-
-  for (const pattern of vimeoPatterns) {
-    const match = url.match(pattern);
-    if (match) {
-      return {
-        type: "vimeo",
-        id: match[1],
-        thumbnailUrl: null, // Vimeo thumbnails require API call
       };
     }
   }
